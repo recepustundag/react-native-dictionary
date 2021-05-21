@@ -15,17 +15,60 @@ import HistoryView from './views/history'
 import FavoriteView from './views/favorite'
 import DetailView from './views/detail'
 
+/* icons */
+import { Left, More } from './components/icons'
+
 /* tab navigator style */
 import TabBar from './components/tab-bar'
+import Button from './components/styled/Button'
 
 const Tab = createBottomTabNavigator()
 const HomeStack = createStackNavigator()
 
 function SearchStack() {
   return (
-    <HomeStack.Navigator headerMode="none">
-      <HomeStack.Screen name="Search" component={SearchView} />
-      <HomeStack.Screen name="Detail" component={DetailView} />
+    <HomeStack.Navigator>
+      <HomeStack.Screen
+        name="Search"
+        component={SearchView}
+        options={() => {
+          return {
+            headerMode: 'none',
+            header: () => {}
+          }
+        }}
+      />
+      <HomeStack.Screen
+        name="Detail"
+        component={DetailView}
+        options={({ route, navigation }) => {
+          return {
+            title: (route.params && route.params.title) || '',
+            headerStyle: {
+              backgroundColor: theme.colors.softRed,
+              shadowColor: 'transparent'
+            },
+            headerLeft: () => (
+              <Button
+                onPress={() => navigation.navigate('Search')}
+                px={20}
+                height="100%"
+              >
+                <Left color={theme.colors.textDark} />
+              </Button>
+            ),
+            headerRight: () => (
+              <Button
+                onPress={() => navigation.navigate('Search')}
+                px={20}
+                height="100%"
+              >
+                <More color={theme.colors.textDark} />
+              </Button>
+            )
+          }
+        }}
+      />
     </HomeStack.Navigator>
   )
 }
