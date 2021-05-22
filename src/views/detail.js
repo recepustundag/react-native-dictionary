@@ -13,35 +13,48 @@ import {
 import theme from '../utils/theme'
 
 /* icons */
-import { Sound, Hand, FavoriteSolid } from '../components/icons'
+import { Sound, Hand, Favorite } from '../components/icons'
+import LoaderText from '../components/loaderText'
 
-function DetailView() {
+function DetailView({ route }) {
+  const [data, setData] = React.useState(null)
+  const keyword = route.params?.keyword
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('dark-content')
     }, [])
   )
 
+  const getDetailData = async () => {
+    const response = await fetch(`https://sozluk.gov.tr/gts?ara=${keyword}`)
+    const data = await response.json()
+    setData(data[0])
+  }
+
+  React.useEffect(() => {
+    getDetailData()
+  }, [])
+
   return (
     <Box bg="softRed" as={SafeAreaView} flex={1}>
       <Box as={ScrollView} p={16}>
         <Box>
           <Text fontSize={32} fontWeight="bold">
-            Detay
+            {keyword}
           </Text>
           <Text color="textLight" mt={6}>
-            Arapça Kalem
+            {data?.lisan}
           </Text>
         </Box>
 
         <Box flexDirection="row" mt={24}>
-          <ActionButton>
+          <ActionButton disabled={!data}>
             <Sound width={24} height={24} color={theme.colors.textLight} />
           </ActionButton>
-          <ActionButton ml={12}>
-            <FavoriteSolid width={24} height={24} color={theme.colors.red} />
+          <ActionButton ml={12} disabled={!data}>
+            <Favorite width={24} height={24} color={theme.colors.textLight} />
           </ActionButton>
-          <ActionButton ml="auto">
+          <ActionButton ml="auto" disabled={!data}>
             <Hand color={theme.colors.textLight} />
             <ActionButtonTitle>Merhaba</ActionButtonTitle>
           </ActionButton>
@@ -49,37 +62,29 @@ function DetailView() {
 
         <Box mt={40}>
           <DetailSummaryItemContainer>
-            <DetailSummaryItemTitle>
-              Lorem İpsum Dolor Sit aMet
-            </DetailSummaryItemTitle>
-            <DetailSummaryItemSummary>
-              Lorem İpsum Dolor Sit aMet
-            </DetailSummaryItemSummary>
+            <LoaderText />
+            <LoaderText width={200} mt={10} />
           </DetailSummaryItemContainer>
-          <DetailSummaryItemContainer border>
-            <DetailSummaryItemTitle>
-              Lorem İpsum Dolor Sit aMet
-            </DetailSummaryItemTitle>
-            <DetailSummaryItemSummary>
-              Lorem İpsum Dolor Sit aMet
-            </DetailSummaryItemSummary>
-          </DetailSummaryItemContainer>
-          <DetailSummaryItemContainer border>
-            <DetailSummaryItemTitle>
-              Lorem İpsum Dolor Sit aMet
-            </DetailSummaryItemTitle>
-            <DetailSummaryItemSummary>
-              Lorem İpsum Dolor Sit aMet
-            </DetailSummaryItemSummary>
-          </DetailSummaryItemContainer>
-          <DetailSummaryItemContainer border>
-            <DetailSummaryItemTitle>
-              Lorem İpsum Dolor Sit aMet
-            </DetailSummaryItemTitle>
-            <DetailSummaryItemSummary>
-              Lorem İpsum Dolor Sit aMet
-            </DetailSummaryItemSummary>
-          </DetailSummaryItemContainer>
+
+          {data
+            ? data.anlamlarListe.map((item) => (
+                <DetailSummaryItemContainer border>
+                  <DetailSummaryItemTitle>
+                    {item.anlam}
+                  </DetailSummaryItemTitle>
+                  { data.orneklerListe && data.orneklerListe.map(ornek => (
+                  <DetailSummaryItemSummary key={ornek.ornek_id}>
+                    {ornek.ornek}
+                  </DetailSummaryItemSummary>
+                  ))}
+                </DetailSummaryItemContainer>
+              ))
+            : [1, 2, 3].map((index) => (
+                <DetailSummaryItemContainer key={index} border={index !== 1}>
+                  <LoaderText />
+                  <LoaderText width={200} mt={10} />
+                </DetailSummaryItemContainer>
+              ))}
         </Box>
       </Box>
     </Box>

@@ -2,7 +2,7 @@ import React from 'react'
 import Box from './styled/box'
 import Text from './styled/Text'
 
-export function DetailSummaryItemContainer({ children, border, ...props }) {
+export function DetailSummaryItemContainer({ children, order, type, border, ...props }) {
   return (
     <Box position="relative" bg="white" px={28} py={20} {...props}>
       {border && (
@@ -16,10 +16,10 @@ export function DetailSummaryItemContainer({ children, border, ...props }) {
         />
       )}
       <Box flexDirection="row">
-        <Text color="textLight" ml={-14} mr={8}>
+       { order && <Text color="textLight" ml={-14} mr={8}>
           1
-        </Text>
-        <Text color="red">İSİM</Text>
+        </Text>}
+        { type && <Text color="red">İSİM</Text>}
       </Box>
       <Box mt={8}>{children}</Box>
     </Box>
